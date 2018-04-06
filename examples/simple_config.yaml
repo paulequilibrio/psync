@@ -1,0 +1,67 @@
+# save your config file as ~/.config/psync/config.yaml
+# each section correspond to a pair of filesystem you want to keep in sync.
+
+arch:
+# required
+  source:
+    uuid: '12ab3456-cdef-7890-12ab-34abcd5e6fa7'
+  target:
+    uuid: 'abc12d34-56ef-7890-1234-56ab78c9d012'
+  mount_path: '/mnt/arch' # must exist. The actually target will be mounted here.
+  rsync_options: # do not put --exclude here. Use rsync_exclude below
+    - '-hazuxSAX'
+    - '--delete-excluded'
+    - '--info=remove,copy,del,flist,name1,progress2,stats2' # shows a lot info
+    # - '--info=progress2' # shows only overall progress
+    # - '--delay-updates' # check all files before start copying
+# optional
+  hostnames: &hosts # the &host is used to save reference for later use
+    source: 'internal_hd' # from /etc/hostname
+    target: 'external_hd' # from /etc/hostname
+  rsync_exclude:
+    - 'dev/*'
+    - 'proc/*'
+    - 'sys/*'
+    - 'tmp/*'
+    - 'run/*'
+    - 'media/*'
+    - 'lost+found'
+  touch: # do not override those files on target (allows different versions on each replica)
+    - 'etc/fstab'
+    - 'etc/hostname'
+    - 'etc/machine-id'
+    - 'boot/grub/grub.cfg'
+
+home:
+# required
+  source:
+    uuid: '12ab3456-cdef-7890-12ab-34abcd5e6fa7'
+  target:
+    uuid: 'abc12d34-56ef-7890-1234-56ab78c9d012'
+  mount_path: '/mnt/home' # must exist
+  rsync_options:
+    - '-hazuxSAX'
+    - '--delete-excluded'
+    - '--info=remove,copy,del,flist,name1,progress2,stats2'
+# optional
+  hostnames: *hosts # use the same values from &host
+
+ntfs:
+# required
+  source:
+    uuid: '1A2B34567C890DE1'
+  target:
+    uuid: '1A2B34C56DE7FABC'
+  mount_path: '/mnt/files' # must exist
+  rsync_options:
+    - '-rhltSxu'
+    - '--no-perms'
+    - '--modify-window=1'
+    - '--delete-excluded'
+    - '--delay-updates'
+    - '--info=remove,copy,del,flist,name1,progress2,stats2'
+# optional
+  hostnames: *hosts
+  rsync_exclude:
+    - 'ntfs/$RECYCLE.BIN'
+    - 'ntfs/.Trash-1000'
