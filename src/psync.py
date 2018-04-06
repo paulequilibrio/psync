@@ -29,36 +29,37 @@ Options:
   -q --quiet          Show no info.
   -d --dry            Run psync without doing anything. Just testing.
   -r --reverse        Run rsync from target to source.
+  -n --nobeep         Don't play a beep at the end.
   -c --config <file>  Load custom config [default: ~/.config/psync/config.yaml]
 
 """
 
 import os
 import sys
+import signal
 from datetime import datetime
 from docopt import docopt
-
 from src import helpers
 from src import bash
-sys.tracebacklimit = 0
 
-version = "v0.1.0"
+version = "v0.1.1"
 info = """Psync {0} - A naive tool for syncing partitions using rsync
 Copyright (C) 2018 Paulo Alexandre Aquino da Costa""".format(version)
 
 arguments = docopt(__doc__, version=info)
 
+if not os.geteuid() == 0:
+    sys.exit("\nYou need root (sudo) permission to run this\n")
+
 dry = arguments['--dry']
 quiet = arguments['--quiet']
 verbose = arguments['--verbose']
 reverse = arguments['--reverse']
+nobeep = arguments['--nobeep']
 
 info = helpers.log('INFO', quiet)
 warning = helpers.log('WARNING', quiet)
 error = helpers.log('ERROR', quiet)
-
-if not os.geteuid() == 0:
-    sys.exit("\nYou need root (sudo) permission to run this\n")
 
 config_path = helpers.resolve_path(arguments['--config'])
 config = helpers.load_config(config_path)
@@ -70,6 +71,8 @@ info("using config file '" + os.path.abspath(config_path) + "'")
 
 
 def main():
+    signal.signal(signal.SIGINT, signal_handler)
+
     time = {'total': {}}
     time['total']['start'] = datetime.now()
 
@@ -137,16 +140,19 @@ def main():
 
     info("psync {0} finished on host '{1}'".format(version, actual_hostname))
 
+    if not dry and not nobeep:
+        bash.beep()
+
 
 def partition_sync(info_section, section, source, target):
     info_section(helpers.get_infoline())
     info_section('FROM  ', helpers.get_infoline(source))
     info_section('  TO  ', helpers.get_infoline(target))
 
-    mounts = (target['device'], target['mountpoint'])
+    target_info = (target['device'], target['mountpoint'])
 
     if verbose:
-        info_section('mounting {0} on {1}'.format(*mounts))
+        info_section('mounting {0} on {1}'.format(*target_info))
 
     if not dry:
         bash.run(['mount', '-U', target['uuid'], target['mountpoint']])
@@ -159,32 +165,38 @@ def partition_sync(info_section, section, source, target):
             if not dry:
                 bash.run(['touch', path])
 
-    if 'rsync_exclude' in section:
-        exclude = ['--exclude={"'+'","'.join(section['rsync_exclude'])+'"}']
-    else:
-        exclude = ['']
-
-    src_mnt = helpers.trailing_slash(source['mountpoint'])
-    tar_mnt = helpers.trailing_slash(target['mountpoint'])
-    replicas = [src_mnt, tar_mnt]
+    source_mountpoint = helpers.trailing_slash(source['mountpoint'])
+    target_mountpoint = helpers.trailing_slash(target['mountpoint'])
+    replicas = [source_mountpoint, target_mountpoint]
 
     options = section['rsync_options']
     if quiet:
         options.append('--quiet')
 
-    rsync = ['rsync'] + options + exclude + replicas
+    if 'rsync_exclude' in section:
+        inside = '", "'.join(section['rsync_exclude'])
+        exclude = '--exclude={{"{}"}}'.format(inside)
+        rsync_command = ['rsync'] + options + [exclude] + replicas
+    else:
+        rsync_command = ['rsync'] + options + replicas
 
     if verbose:
-        info_section(' '.join(rsync))
+        info_section(' '.join(rsync_command))
     else:
         info_section('rsync from {0} to {1}'.format(*replicas))
 
     if not dry:
-        bash.run(rsync)
+        bash.run(rsync_command)
 
     if verbose:
-        info_section('unmounting {0} from {1}'.format(*mounts))
+        info_section('unmounting {0} from {1}'.format(*target_info))
 
     if not dry:
         bash.run(['sync', '--file-system', target['mountpoint']])
         bash.run(['umount', target['mountpoint']])
+
+
+def signal_handler(signal_number, stack_frame):
+    print()
+    error('SIGINT received, exit')
+    sys.exit(-1)

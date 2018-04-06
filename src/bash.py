@@ -16,15 +16,25 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import subprocess
+import sys
 
 
 def get_output(command_list):
-    sub = subprocess.run(command_list, check=True, stdout=subprocess.PIPE)
+    try:
+        sub = subprocess.run(command_list, check=True, stdout=subprocess.PIPE)
+    except subprocess.CalledProcessError as error:
+        print('\n{}'.format(error))
+        sys.exit(1)
     return sub.stdout.decode('utf-8').strip()
 
 
 def run(command_list):
-    return subprocess.run(command_list, check=True)
+    try:
+        null = subprocess.DEVNULL
+        sub = subprocess.run(command_list, check=True, stderr=null)
+    except subprocess.CalledProcessError as error:
+        print('\n{}'.format(error))
+        sys.exit(1)
 
 
 def get_hostname():
@@ -70,3 +80,14 @@ def handle_reverse(section, reverse):
     target['mountpoint'] = section['mount_path']
 
     return [source, target]
+
+
+def beep():
+    sound = [
+              'beep',
+              '-f', '2000', '-l', '250', '-n',
+              '-f', '1000', '-l', '250', '-n',
+              '-f', '2000', '-l', '250', '-n',
+              '-f', '1500', '-l', '100', '-d', '250', '-r', '3'
+            ]
+    run(sound)
