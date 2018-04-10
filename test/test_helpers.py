@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from src import helpers
+from source import helpers
 import os
 import unittest
 # python -m unittest -v
