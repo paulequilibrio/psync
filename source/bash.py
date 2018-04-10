@@ -1,6 +1,5 @@
 # Psync - a naive tool for syncing partitions using rsync
-# Copyright (C) 2018  Paulo Alexandre Aquino da Costa
-# < contact at pauloalexandre dot com >
+# Copyright (C) 2018 Paulo Alexandre Aquino da Costa contact@pauloalexandre.com
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by

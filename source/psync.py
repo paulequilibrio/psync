@@ -1,6 +1,5 @@
 # Psync - a naive tool for syncing partitions using rsync
-# Copyright (C) 2018  Paulo Alexandre Aquino da Costa
-# < contact at pauloalexandre dot com >
+# Copyright (C) 2018 Paulo Alexandre Aquino da Costa contact@pauloalexandre.com
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -23,13 +22,13 @@ Usage:
   psync --version
 
 Options:
-  --version           Show version.
-  -h --help           Show this screen.
-  -v --verbose        Show more info.
-  -q --quiet          Show no info.
-  -d --dry            Run psync without doing anything. Just testing.
-  -r --reverse        Run rsync from target to source.
-  -n --nobeep         Don't play a beep at the end.
+  --version           Print psync's version.
+  -h --help           Print psync command line options.
+  -v --verbose        Increase verbosity.
+  -q --quiet          Suppresses normal output.
+  -d --dry            Perform a trial run with no changes made.
+  -r --reverse        Sync files from target to source.
+  -n --nobeep         Don't play a beep when finished.
   -c --config <file>  Load custom config [default: ~/.config/psync/config.yaml]
 
 """
@@ -42,14 +41,14 @@ from docopt import docopt
 from src import helpers
 from src import bash
 
-version = "v0.1.1"
-info = """Psync {0} - A naive tool for syncing partitions using rsync
+version = "v0.1.2"
+info = """Psync {} - A naive tool for syncing partitions using rsync
 Copyright (C) 2018 Paulo Alexandre Aquino da Costa""".format(version)
 
 arguments = docopt(__doc__, version=info)
 
 if not os.geteuid() == 0:
-    sys.exit("\nYou need root (sudo) permission to run this\n")
+    sys.exit("\nYou must run this as root\n")
 
 dry = arguments['--dry']
 quiet = arguments['--quiet']

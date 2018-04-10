@@ -1,0 +1,57 @@
+.TH psync 8 "April 10, 2018" "Psync v0.1.2" "Psync Manual"
+
+.SH NAME
+psync - A naive tool for syncing partitions using rsync
+
+.SH SYNOPSIS
+.B psync
+[<sections>] [--verbose | --quiet] [options]
+
+.SH DESCRIPTION
+.B psync
+is a tool to help you keep pairs of partitions in sync using
+.IR rsync .
+.PP
+.B psync
+was primarily built to simplify the process of keep in sync two copies of a whole linux system with (possibly) several partitions. Using
+.B psync
+you can achieve that with a single command.
+
+.SH OPTIONS
+.TP
+.B --version
+Print psync's version.
+.TP
+.BI -h , " --help"
+Print psync command line options.
+.TP
+.BI -v , " --verbose"
+Increase verbosity.
+.TP
+.BI -q , " --quiet"
+Suppresses normal output.
+.TP
+.BI -d , " --dry"
+Perform a trial run with no changes made. Useful for checking your config.
+.TP
+.BI -r , " --reverse"
+Sync files from target to source.
+.TP
+.BI -n , " --nobeep"
+Don't play a beep when finished.
+.TP
+.BI -c , " --config" " <config_file>"
+Load a config file from a custom location. The default location is
+.I ~/.config/psync/config.yaml
+
+.SH HOMEPAGE
+https://github.com/paulequilibrio/psync
+
+.SH BUGS
+Bugs are tracked in GitHub Issues: https://github.com/paulequilibrio/psync/issues
+
+.SH SEE ALSO
+.BR rsync (1)
+
+.SH AUTHOR
+Paulo Alexandre Aquino da Costa (paulequilibiro) contact@pauloalexandre.com
