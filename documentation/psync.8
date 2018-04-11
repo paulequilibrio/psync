@@ -1,4 +1,4 @@
-.TH psync 8 "April 10, 2018" "Psync v0.1.3" "Psync Manual"
+.TH psync 8 "April 11, 2018" "Psync v0.1.4" "Psync Manual"
 
 .SH NAME
 psync - A naive tool for syncing partitions using rsync
@@ -42,7 +42,12 @@ Don't play a beep when finished.
 .TP
 .BI -c , " --config" " <config_file>"
 Load a config file from a custom location. The default location is
-.I ~/.config/psync/config.yaml
+.IR $HOME/.config/psync/config.yaml .
+
+Use
+.I /etc/psync/simple_config.yaml
+as a start point to create your own config file.
+
 
 .SH HOMEPAGE
 https://github.com/paulequilibrio/psync

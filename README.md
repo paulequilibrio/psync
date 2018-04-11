@@ -4,17 +4,11 @@ A naive tool for syncing partitions using rsync
 
 ---
 
+## Arch Linux package available on AUR
+[https://aur.archlinux.org/packages/psync/](https://aur.archlinux.org/packages/psync/)
+
+
 ## Hot to use
-
-Make `psync` executable
-```
-chmod +x psync
-```
-
-Optionally, you could put it on your `PATH`
-```
-sudo ln -s psync /usr/bin/psync
-```
 
 Create your own `config.yaml` following the `simple_config.yaml` in `examples` directory.
 

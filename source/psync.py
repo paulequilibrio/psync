@@ -41,7 +41,7 @@ from docopt import docopt
 from source import helpers
 from source import bash
 
-version = "v0.1.3"
+version = "v0.1.4"
 info = """Psync {} - A naive tool for syncing partitions using rsync
 Copyright (C) 2018 Paulo Alexandre Aquino da Costa""".format(version)
 
